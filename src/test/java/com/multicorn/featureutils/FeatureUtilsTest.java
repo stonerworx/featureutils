@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class FeatureUtilsTest {
 
   static {
-    System.loadLibrary("opencv_java");
+    System.loadLibrary("opencv_java2411");
     System.loadLibrary("opencv_nonfree");
     System.loadLibrary("opensurf_java");
   }
