@@ -1,0 +1,17 @@
+group 'com.multicorn.featureutils'
+version '1.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile fileTree(dir: '/home/javalibs', include: ['*.jar'])
+    compile group: 'org.boofcv', name: 'feature', version: '0.18'
+}
