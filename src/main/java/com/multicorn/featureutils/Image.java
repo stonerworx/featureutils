@@ -3,6 +3,7 @@ package com.multicorn.featureutils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.Size;
 import org.opencv.features2d.Features2d;
 
 import java.awt.image.BufferedImage;
@@ -27,8 +28,29 @@ public class Image {
   protected Mat imageMat;
   protected ImageFloat32 imageFloat32;
 
-  public Image() {
+  public Image() {}
 
+  public Image(Mat image) {
+    Size size = image.size();
+    this.height = (int) size.height;
+    this.width = (int) size.width;
+    imageMat = image;
+
+    //convert Mat to BufferedImage
+    BufferedImage bufferedImage;
+    byte[] byteArray = new byte[(int) (imageMat.total() * imageMat.channels())];
+    imageMat.get(0, 0, byteArray);
+    int type;
+    if(imageMat.channels() == 1) {
+      type = BufferedImage.TYPE_BYTE_GRAY;
+    } else {
+      type = BufferedImage.TYPE_3BYTE_BGR;
+    }
+    bufferedImage = new BufferedImage(getWidth(), getHeight(), type);
+    bufferedImage.getRaster().setDataElements(0, 0, getWidth(), getHeight(), byteArray);
+
+    imageFloat32 = new ImageFloat32(bufferedImage.getWidth(), bufferedImage.getHeight());
+    ConvertBufferedImage.convertFrom(bufferedImage, imageFloat32);
   }
 
   public Image(BufferedImage image) {
@@ -71,10 +93,11 @@ public class Image {
 
     int type;
 
-    if(out.channels() == 1)
+    if(out.channels() == 1) {
       type = BufferedImage.TYPE_BYTE_GRAY;
-    else
+    } else {
       type = BufferedImage.TYPE_3BYTE_BGR;
+    }
 
     outImage = new BufferedImage(getWidth(), getHeight(), type);
 
