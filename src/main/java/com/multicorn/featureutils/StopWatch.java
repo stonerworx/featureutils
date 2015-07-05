@@ -12,6 +12,7 @@ import java.util.UUID;
 public class StopWatch {
 
   private static StopWatch instance;
+  private final Object syncObject = new Object();
   private HashMap<UUID, Timediff> timediffs = new HashMap<UUID, Timediff>();
   private HashMap<String, ArrayList<UUID>> uuids = new HashMap<String, ArrayList<UUID>>();
 
@@ -25,13 +26,16 @@ public class StopWatch {
   }
 
   public UUID start(String category) {
-    Timediff timediff = new Timediff(category);
-    timediffs.put(timediff.getId(), timediff);
-    if (!uuids.containsKey(category)) {
-      uuids.put(category, new ArrayList<UUID>());
+    synchronized (syncObject) {
+      Timediff timediff = new Timediff(category);
+      timediffs.put(timediff.getId(), timediff);
+      if (!uuids.containsKey(category)) {
+        uuids.put(category, new ArrayList<UUID>());
+      }
+      uuids.get(category).add(timediff.getId());
+      syncObject.notifyAll();
+      return timediff.getId();
     }
-    uuids.get(category).add(timediff.getId());
-    return timediff.getId();
   }
 
   public void stop(UUID id) {
@@ -62,7 +66,9 @@ public class StopWatch {
 
       if (uuids.get(category) != null) {
         for (UUID uuid : uuids.get(category)) {
-          time += timediffs.get(uuid).getDifference();
+          if (timediffs.get(uuid) != null) {
+            time += timediffs.get(uuid).getDifference();
+          }
         }
       }
 
