@@ -12,17 +12,20 @@ import java.util.UUID;
 public class StopWatch {
 
   private static StopWatch instance;
-  private final Object syncObject = new Object();
+  private static final Object syncObject = new Object();
   private HashMap<UUID, Timediff> timediffs = new HashMap<UUID, Timediff>();
   private HashMap<String, ArrayList<UUID>> uuids = new HashMap<String, ArrayList<UUID>>();
 
   private StopWatch() {}
 
   public static StopWatch getInstance() {
-    if (instance == null) {
-      instance = new StopWatch();
+    synchronized (syncObject) {
+      if (instance == null) {
+        instance = new StopWatch();
+      }
+      syncObject.notifyAll();
+      return instance;
     }
-    return instance;
   }
 
   public UUID start(String category) {
@@ -33,30 +36,43 @@ public class StopWatch {
         uuids.put(category, new ArrayList<UUID>());
       }
       uuids.get(category).add(timediff.getId());
+      UUID id = timediff.getId();
       syncObject.notifyAll();
-      return timediff.getId();
+      return id;
     }
   }
 
   public void stop(UUID id) {
-    timediffs.get(id).stop();
+    synchronized (syncObject) {
+      timediffs.get(id).stop();
+      syncObject.notifyAll();
+    }
   }
 
   public void reset() {
-    timediffs = new HashMap<UUID, Timediff>();
-    uuids = new HashMap<String, ArrayList<UUID>>();
+    synchronized (syncObject) {
+      timediffs = new HashMap<UUID, Timediff>();
+      uuids = new HashMap<String, ArrayList<UUID>>();
+    }
   }
 
   public long getDifference(UUID id) {
-    return timediffs.get(id).getDifference();
+    synchronized (syncObject) {
+      long difference = timediffs.get(id).getDifference();
+      syncObject.notifyAll();
+      return difference;
+    }
   }
 
   public int getCountForCategory(String category) {
-    int count = 0;
-    if (uuids.get(category) != null) {
-      count = uuids.get(category).size();
+    synchronized (syncObject) {
+      int count = 0;
+      if (uuids.get(category) != null) {
+        count = uuids.get(category).size();
+      }
+      syncObject.notifyAll();
+      return count;
     }
-    return count;
   }
 
   public long getDifferenceForCategory(String category) {
@@ -68,7 +84,7 @@ public class StopWatch {
 
         if (uuids.get(category) != null) {
           for (UUID uuid : uuids.get(category)) {
-            if (timediffs.get(uuid) != null) {
+            if (timediffs.get(uuid) != null && timediffs.get(uuid).getDifference() > 0) {
               time += timediffs.get(uuid).getDifference();
             }
           }
