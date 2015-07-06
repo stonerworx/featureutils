@@ -105,7 +105,7 @@ public class FeatureUtils {
   }
 
   private static List<Keypoint> detectOpensurf(Image image) {
-    MatOfKeyPoint keyPoints = Opensurf.detect(image.getImageMat(), 5, 4, 2, 0.0004f);
+    MatOfKeyPoint keyPoints = Opensurf.detect(image.getImageMat(), 5, 4, 2, 0.0014f);
 
     return matOfKeyPointToKeypointList(keyPoints);
   }
@@ -161,10 +161,20 @@ public class FeatureUtils {
   }
 
   private static List<Keypoint> detectDescribeOpensurf(Image image) {
-    //TODO: use Opensurf detDes.
+    MatOfKeyPoint keyPoints = new MatOfKeyPoint();
+    Mat descriptors = new Mat();
 
-    List<Keypoint> keypoints = detectOpensurf(image);
-    describeOpensurf(image, keypoints);
+    Opensurf.detectDescribe(image.getImageMat(), keyPoints, descriptors, 5, 4, 2, 0.0014f, true);
+
+    List<Keypoint> keypoints = matOfKeyPointToKeypointList(keyPoints);
+    for (int i = 0; i < keypoints.size(); i++) {
+      Keypoint kp = keypoints.get(i);
+      Descriptor descriptor = new Descriptor();
+      for (int j = 0; j < descriptors.row(i).cols(); j++) {
+        descriptor.addValue(descriptors.get(i, j)[0]);
+      }
+      kp.setDescriptor(descriptor);
+    }
 
     return keypoints;
   }

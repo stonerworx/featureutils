@@ -60,21 +60,24 @@ public class StopWatch {
   }
 
   public long getDifferenceForCategory(String category) {
-    int count = getCountForCategory(category);
-    if (count > 0) {
-      long time = 0;
+    synchronized (syncObject) {
+      int count = getCountForCategory(category);
+      long difference = 0;
+      if (count > 0) {
+        long time = 0;
 
-      if (uuids.get(category) != null) {
-        for (UUID uuid : uuids.get(category)) {
-          if (timediffs.get(uuid) != null) {
-            time += timediffs.get(uuid).getDifference();
+        if (uuids.get(category) != null) {
+          for (UUID uuid : uuids.get(category)) {
+            if (timediffs.get(uuid) != null) {
+              time += timediffs.get(uuid).getDifference();
+            }
           }
         }
-      }
 
-      return time / count;
-    } else {
-      return 0;
+        difference = time / count;
+      }
+      syncObject.notifyAll();
+      return difference;
     }
   }
 }

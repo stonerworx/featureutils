@@ -1,5 +1,7 @@
 package com.multicorn.featureutils;
 
+import com.google.gson.annotations.Expose;
+
 import java.util.ArrayList;
 
 /**
@@ -9,6 +11,7 @@ import java.util.ArrayList;
  */
 public class Descriptor {
 
+  @Expose
   private ArrayList<Double> values = new ArrayList<Double>();
 
   public void addValue(double value) {

@@ -1,5 +1,7 @@
 package com.multicorn.featureutils;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Class Keypoint, created by David on 01.06.15.
  *
@@ -7,10 +9,15 @@ package com.multicorn.featureutils;
  */
 public class Keypoint {
 
+  @Expose
   private double x;
+  @Expose
   private double y;
+  @Expose
   private double angle;
+  @Expose
   private double size;
+  @Expose
   private Descriptor descriptor;
 
   public Keypoint(double x, double y, double angle, double size) {
