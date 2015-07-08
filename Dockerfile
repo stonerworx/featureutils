@@ -11,5 +11,8 @@ COPY ./ /home/featureutils/
 
 RUN gradle build
 
-#copy java library
+# copy java library
 RUN cp /home/featureutils/build/libs/featureutils-1.0.jar /home/javalibs/featureutils-1.0.jar
+
+# clean up after yourself
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
