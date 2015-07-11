@@ -32,9 +32,11 @@ public class FeatureUtilsTest {
 
     assertTrue("keypoints shouldn't be null", keypoints != null);
     assertTrue("it should detect keypoints", keypoints.size() > 0);
-        for (Keypoint kp : keypoints) {
+    for (Keypoint kp : keypoints) {
       assertEquals("it should compute a descriptor with 64 values", 64, kp.getDescriptor().getSize());
     }
+
+    img.release();
   }
 
   @Test
@@ -48,6 +50,8 @@ public class FeatureUtilsTest {
     for (Keypoint kp : keypoints) {
       assertEquals("it should compute a descriptor with 64 values", 64, kp.getDescriptor().getSize());
     }
+
+    img.release();
   }
 
   @Test
@@ -61,6 +65,8 @@ public class FeatureUtilsTest {
     for (Keypoint kp : keypoints) {
       assertEquals("it should compute a descriptor with 64 values", 64, kp.getDescriptor().getSize());
     }
+
+    img.release();
   }
 
   @Test
@@ -78,6 +84,8 @@ public class FeatureUtilsTest {
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+    img.release();
   }
 
   private Image getTestImage() {

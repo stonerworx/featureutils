@@ -51,6 +51,8 @@ public class Image {
 
     imageFloat32 = new ImageFloat32(bufferedImage.getWidth(), bufferedImage.getHeight());
     ConvertBufferedImage.convertFrom(bufferedImage, imageFloat32);
+
+    bufferedImage.flush();
   }
 
   public Image(BufferedImage image) {
@@ -63,6 +65,8 @@ public class Image {
 
     imageFloat32 = new ImageFloat32(image.getWidth(), image.getHeight());
     ConvertBufferedImage.convertFrom(image, imageFloat32);
+
+    image.flush();
   }
 
   public int getHeight() {
@@ -106,4 +110,10 @@ public class Image {
     return outImage;
   }
 
+  public void release() {
+    imageMat.release();
+    imageFloat32 = null;
+    height = 0;
+    width = 0;
+  }
 }
