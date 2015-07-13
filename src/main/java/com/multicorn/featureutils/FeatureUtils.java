@@ -32,12 +32,13 @@ public class FeatureUtils {
 
   public static final int DISTANCE_EUCLIDEAN = 0;
 
-  public static List<Keypoint> detect(Image image, int type) {
+  public static List<Keypoint> detect(Image image, int type, int octaves, int intervals,
+                                      int initSample, float threshold) {
     switch (type) {
       case TYPE_OPENCV_SURF:
-        return detectOpencvSurf(image);
+        return detectOpencvSurf(image, octaves, intervals, initSample, threshold);
       case TYPE_OPENSURF:
-        return detectOpensurf(image);
+        return detectOpensurf(image, octaves, intervals, initSample, threshold);
       default:
         return null;
     }
@@ -52,14 +53,15 @@ public class FeatureUtils {
     }
   }
 
-  public static List<Keypoint> detectDescribe(Image image, int type) {
+  public static List<Keypoint> detectDescribe(Image image, int type, int octaves, int intervals,
+                                              int initSample, float threshold) {
     switch (type) {
       case TYPE_OPENCV_SURF:
-        return detectDescribeOpencvSurf(image);
+        return detectDescribeOpencvSurf(image, octaves, intervals, initSample, threshold);
       case TYPE_OPENSURF:
-        return detectDescribeOpensurf(image);
+        return detectDescribeOpensurf(image, octaves, intervals, initSample, threshold);
       case TYPE_BOOFCV_SURF:
-        return detectDescribeBoofcvSurf(image);
+        return detectDescribeBoofcvSurf(image, octaves, intervals, initSample, threshold);
       default:
         return null;
     }
@@ -96,7 +98,8 @@ public class FeatureUtils {
    * -----------------------------------------------------------------------------------------------
    */
 
-  private static List<Keypoint> detectOpencvSurf(Image image) {
+  private static List<Keypoint> detectOpencvSurf(Image image, int octaves, int intervals,
+                                                 int initSample, float threshold) {
     MatOfKeyPoint keyPoints = new MatOfKeyPoint();
     FeatureDetector featureDetector = FeatureDetector.create(FeatureDetector.SURF);
     featureDetector.detect(image.getImageMat(), keyPoints);
@@ -104,8 +107,10 @@ public class FeatureUtils {
     return matOfKeyPointToKeypointList(keyPoints);
   }
 
-  private static List<Keypoint> detectOpensurf(Image image) {
-    MatOfKeyPoint keyPoints = Opensurf.detect(image.getImageMat(), 5, 4, 2, 0.0014f);
+  private static List<Keypoint> detectOpensurf(Image image, int octaves, int intervals,
+                                               int initSample, float threshold) {
+    MatOfKeyPoint keyPoints = Opensurf.detect(image.getImageMat(), octaves, intervals, initSample,
+                                              threshold);
 
     return matOfKeyPointToKeypointList(keyPoints);
   }
@@ -153,18 +158,21 @@ public class FeatureUtils {
    * -----------------------------------------------------------------------------------------------
    */
 
-  private static List<Keypoint> detectDescribeOpencvSurf(Image image) {
-    List<Keypoint> keypoints = detectOpencvSurf(image);
+  private static List<Keypoint> detectDescribeOpencvSurf(Image image, int octaves, int intervals,
+                                                         int initSample, float threshold) {
+    List<Keypoint> keypoints = detectOpencvSurf(image, octaves, intervals, initSample, threshold);
     describeOpencvSurf(image, keypoints);
 
     return keypoints;
   }
 
-  private static List<Keypoint> detectDescribeOpensurf(Image image) {
+  private static List<Keypoint> detectDescribeOpensurf(Image image, int octaves, int intervals,
+                                                       int initSample, float threshold) {
     MatOfKeyPoint keyPoints = new MatOfKeyPoint();
     Mat descriptors = new Mat();
 
-    Opensurf.detectDescribe(image.getImageMat(), keyPoints, descriptors, 5, 4, 2, 0.0014f, true);
+    Opensurf.detectDescribe(image.getImageMat(), keyPoints, descriptors, octaves, intervals,
+                            initSample, threshold, true);
 
     List<Keypoint> keypoints = matOfKeyPointToKeypointList(keyPoints);
     for (int i = 0; i < keypoints.size(); i++) {
@@ -179,11 +187,13 @@ public class FeatureUtils {
     return keypoints;
   }
 
-  private static List<Keypoint> detectDescribeBoofcvSurf(Image image) {
+  private static List<Keypoint> detectDescribeBoofcvSurf(Image image, int octaves, int intervals,
+                                                         int initSample, float threshold) {
     List<Keypoint> keypoints = new ArrayList<Keypoint>();
 
     DetectDescribePoint<ImageFloat32,SurfFeature> surf = FactoryDetectDescribe.
-        surfStable(new ConfigFastHessian(0, 2, 200, 2, 9, 4, 4), null, null, ImageFloat32.class);
+        surfStable(new ConfigFastHessian(threshold, 2, 0, initSample, 9, intervals, octaves),
+                   null, null, ImageFloat32.class);
 
     surf.detect(image.getImageFloat32());
 

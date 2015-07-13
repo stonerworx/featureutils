@@ -28,7 +28,8 @@ public class FeatureUtilsTest {
   public void testOpensurf() {
     Image img = getTestImage();
 
-    List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF);
+    List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF, 5,
+                                                           4, 2, 0.0004f);
 
     assertTrue("keypoints shouldn't be null", keypoints != null);
     assertTrue("it should detect keypoints", keypoints.size() > 0);
@@ -43,7 +44,8 @@ public class FeatureUtilsTest {
   public void testOpenCvsurf() {
     Image img = getTestImage();
 
-    List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENCV_SURF);
+    List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENCV_SURF, 5,
+                                                           4, 2, 0.0004f);
 
     assertTrue("keypoints shouldn't be null", keypoints != null);
     assertTrue("it should detect keypoints", keypoints.size() > 0);
@@ -58,7 +60,8 @@ public class FeatureUtilsTest {
   public void testBoofCvsurf() {
     Image img = getTestImage();
 
-    List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_BOOFCV_SURF);
+    List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_BOOFCV_SURF, 5,
+                                                           4, 2, 0.0004f);
 
     assertTrue("keypoints shouldn't be null", keypoints != null);
     assertTrue("it should detect keypoints", keypoints.size() > 0);
@@ -73,7 +76,8 @@ public class FeatureUtilsTest {
   public void testMatcher() {
     Image img = getTestImage();
 
-    List<Keypoint> keypoints1 = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF);
+    List<Keypoint> keypoints1 = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF, 5,
+                                                            4, 2, 0.0004f);
 
     try {
       List<Match> matches = FeatureUtils.getMatches(keypoints1, keypoints1,
