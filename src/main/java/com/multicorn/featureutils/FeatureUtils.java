@@ -11,11 +11,11 @@ import org.opencv.features2d.KeyPoint;
 import java.util.ArrayList;
 import java.util.List;
 
-import boofcv.abst.feature.detdesc.DetectDescribePoint;
-import boofcv.abst.feature.detect.interest.ConfigFastHessian;
-import boofcv.factory.feature.detdesc.FactoryDetectDescribe;
-import boofcv.struct.feature.SurfFeature;
-import boofcv.struct.image.ImageFloat32;
+//import boofcv.abst.feature.detdesc.DetectDescribePoint;
+//import boofcv.abst.feature.detect.interest.ConfigFastHessian;
+//import boofcv.factory.feature.detdesc.FactoryDetectDescribe;
+//import boofcv.struct.feature.SurfFeature;
+//import boofcv.struct.image.ImageFloat32;
 
 /**
  * Class FeatureUtils, created by David on 31.05.15.
@@ -26,7 +26,7 @@ public class FeatureUtils {
 
   public static final int TYPE_OPENCV_SURF = 0;
   public static final int TYPE_OPENSURF = 1;
-  public static final int TYPE_BOOFCV_SURF = 2;
+  //public static final int TYPE_BOOFCV_SURF = 2;
 
   public static final int MATCH_BRUTE_FORCE = 0;
 
@@ -60,8 +60,8 @@ public class FeatureUtils {
         return detectDescribeOpencvSurf(image, octaves, intervals, initSample, threshold);
       case TYPE_OPENSURF:
         return detectDescribeOpensurf(image, octaves, intervals, initSample, threshold);
-      case TYPE_BOOFCV_SURF:
-        return detectDescribeBoofcvSurf(image, octaves, intervals, initSample, threshold);
+      //case TYPE_BOOFCV_SURF:
+      //  return detectDescribeBoofcvSurf(image, octaves, intervals, initSample, threshold);
       default:
         return null;
     }
@@ -187,6 +187,7 @@ public class FeatureUtils {
     return keypoints;
   }
 
+  /*
   private static List<Keypoint> detectDescribeBoofcvSurf(Image image, int octaves, int intervals,
                                                          int initSample, float threshold) {
     List<Keypoint> keypoints = new ArrayList<Keypoint>();
@@ -211,6 +212,7 @@ public class FeatureUtils {
 
     return keypoints;
   }
+  */
 
   /*
    * -----------------------------------------------------------------------------------------------

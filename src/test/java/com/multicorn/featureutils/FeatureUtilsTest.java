@@ -56,6 +56,7 @@ public class FeatureUtilsTest {
     img.release();
   }
 
+  /*
   @Test
   public void testBoofCvsurf() {
     Image img = getTestImage();
@@ -71,6 +72,7 @@ public class FeatureUtilsTest {
 
     img.release();
   }
+  */
 
   @Test
   public void testMatcher() {
