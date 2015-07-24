@@ -75,7 +75,7 @@ public class FeatureUtilsTest {
   */
 
   @Test
-  public void testMatcher() {
+  public void testBruteForceMatcher() {
     Image img = getTestImage();
 
     List<Keypoint> keypoints1 = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF, 5,
@@ -84,6 +84,26 @@ public class FeatureUtilsTest {
     try {
       List<Match> matches = FeatureUtils.getMatches(keypoints1, keypoints1,
                                                     FeatureUtils.MATCH_BRUTE_FORCE,
+                                                    FeatureUtils.DISTANCE_EUCLIDEAN);
+
+      assertEquals("all keypoints should match.", keypoints1.size(), matches.size());
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    img.release();
+  }
+
+  @Test
+  public void testFlannMatcher() {
+    Image img = getTestImage();
+
+    List<Keypoint> keypoints1 = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF, 5,
+                                                            4, 2, 0.0004f);
+
+    try {
+      List<Match> matches = FeatureUtils.getMatches(keypoints1, keypoints1,
+                                                    FeatureUtils.MATCH_OPENCV_FLANN,
                                                     FeatureUtils.DISTANCE_EUCLIDEAN);
 
       assertEquals("all keypoints should match.", keypoints1.size(), matches.size());

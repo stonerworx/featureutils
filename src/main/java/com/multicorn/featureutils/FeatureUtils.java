@@ -2,9 +2,13 @@ package com.multicorn.featureutils;
 
 import com.multicorn.opensurf.Opensurf;
 
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfDMatch;
 import org.opencv.core.MatOfKeyPoint;
+import org.opencv.features2d.DMatch;
 import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.DescriptorMatcher;
 import org.opencv.features2d.FeatureDetector;
 import org.opencv.features2d.KeyPoint;
 
@@ -29,6 +33,7 @@ public class FeatureUtils {
   //public static final int TYPE_BOOFCV_SURF = 2;
 
   public static final int MATCH_BRUTE_FORCE = 0;
+  public static final int MATCH_OPENCV_FLANN = 1;
 
   public static final int DISTANCE_EUCLIDEAN = 0;
 
@@ -72,6 +77,8 @@ public class FeatureUtils {
     switch (type) {
       case MATCH_BRUTE_FORCE:
         return getMatchesBruteForce(keypoints1, keypoints2, distanceFunction);
+      case MATCH_OPENCV_FLANN:
+        return getMatchesOpenCVFlann(keypoints1, keypoints2, distanceFunction);
       default:
         return null;
     }
@@ -258,6 +265,22 @@ public class FeatureUtils {
     return matches;
   }
 
+  private static List<Match> getMatchesOpenCVFlann(List<Keypoint> keypoints1,
+                                             List<Keypoint> keypoints2,
+                                             int distanceFunction) throws Exception{
+
+    MatOfDMatch matchesMat = new MatOfDMatch();
+
+    Mat descriptors1 = keypointsToDescriptorMat(keypoints1);
+
+    Mat descriptors2 = keypointsToDescriptorMat(keypoints2);
+
+    DescriptorMatcher matcher = DescriptorMatcher.create(DescriptorMatcher.FLANNBASED);
+    matcher.match(descriptors1, descriptors2, matchesMat);
+
+    return matOfDMatchToMatchesList(keypoints1, keypoints2, matchesMat);
+  }
+
   /*
    * -----------------------------------------------------------------------------------------------
    * different distance functions
@@ -280,6 +303,49 @@ public class FeatureUtils {
    * helper / conversion functions
    * -----------------------------------------------------------------------------------------------
    */
+
+  public static List<Match> matOfDMatchToMatchesList(List<Keypoint> keypoints1,
+                                                     List<Keypoint> keypoints2,
+                                                     MatOfDMatch matOfDMatch) {
+    List<Match> matches = new ArrayList<Match>();
+
+    double max_dist = 0;
+    double min_dist = 100;
+
+    //-- Quick calculation of max and min distances between keypoints
+    for (DMatch dMatch : matOfDMatch.toArray()) {
+      double dist = dMatch.distance;
+      if (dist < min_dist) {
+        min_dist = dist;
+      }
+      if (dist > max_dist) {
+        max_dist = dist;
+      }
+    }
+
+    for (DMatch dMatch : matOfDMatch.toArray()) {
+      if (dMatch.distance <= Math.max(2*min_dist, 0.02)) {
+        matches.add(new Match(keypoints1.get(dMatch.queryIdx), keypoints2.get(dMatch.trainIdx),
+                              dMatch.distance));
+      }
+    }
+
+    return matches;
+  }
+
+  public static Mat keypointsToDescriptorMat(List<Keypoint> keypoints) {
+    Mat descriptors = new Mat(keypoints.size(), keypoints.get(0).getDescriptor().getSize(), CvType.CV_32FC1);
+    int i = 0;
+    for (Keypoint keypoint : keypoints) {
+      int j = 0;
+      for (Double value : keypoint.getDescriptor().getValues()) {
+        descriptors.put(i, j, value);
+        j++;
+      }
+      i++;
+    }
+    return descriptors;
+  }
 
   public static List<Keypoint> matOfKeyPointToKeypointList(MatOfKeyPoint matOfKeyPoint) {
     List<Keypoint> keypoints = new ArrayList<Keypoint>();
