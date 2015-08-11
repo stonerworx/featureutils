@@ -324,13 +324,34 @@ public class FeatureUtils {
     }
 
     for (DMatch dMatch : matOfDMatch.toArray()) {
-      if (dMatch.distance <= Math.max(2*min_dist, 0.02)) {
+      if (dMatch.distance <= Math.max(2 * min_dist, 0.02)) {
         matches.add(new Match(keypoints1.get(dMatch.queryIdx), keypoints2.get(dMatch.trainIdx),
                               dMatch.distance));
       }
     }
 
     return matches;
+  }
+
+  public static MatOfDMatch matchesListToMatOfDMatch(List<Keypoint> keypoints1,
+                                                     List<Keypoint> keypoints2,
+                                                     List<Match> matches) {
+
+    MatOfDMatch matOfDMatch = new MatOfDMatch();
+
+    DMatch[] dMatches = new DMatch[matches.size()];
+    int i = 0;
+    for (Match match : matches) {
+      DMatch dMatch = new DMatch();
+      dMatch.distance = match.getDistance();
+      dMatch.queryIdx = keypoints1.indexOf(match.getKeypoint1());
+      dMatch.trainIdx = keypoints2.indexOf(match.getKeypoint2());
+      dMatches[i] = dMatch;
+      i++;
+    }
+    matOfDMatch.fromArray(dMatches);
+
+    return matOfDMatch;
   }
 
   public static Mat keypointsToDescriptorMat(List<Keypoint> keypoints) {

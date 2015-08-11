@@ -1,8 +1,10 @@
 package com.multicorn.featureutils;
 
 import org.junit.Test;
+import org.opencv.highgui.Highgui;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class FeatureUtilsTest {
 
   @Test
   public void testOpensurf() {
-    Image img = getTestImage();
+    Image img = getTestImage1();
 
     List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF, 5,
                                                            4, 2, 0.0004f);
@@ -42,7 +44,7 @@ public class FeatureUtilsTest {
 
   @Test
   public void testOpenCvsurf() {
-    Image img = getTestImage();
+    Image img = getTestImage1();
 
     List<Keypoint> keypoints = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENCV_SURF, 5,
                                                            4, 2, 0.0004f);
@@ -76,7 +78,7 @@ public class FeatureUtilsTest {
 
   @Test
   public void testBruteForceMatcher() {
-    Image img = getTestImage();
+    Image img = getTestImage1();
 
     List<Keypoint> keypoints1 = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF, 5,
                                                             4, 2, 0.0004f);
@@ -96,10 +98,11 @@ public class FeatureUtilsTest {
 
   @Test
   public void testFlannMatcher() {
-    Image img = getTestImage();
+    Image img = getTestImage1();
 
     List<Keypoint> keypoints1 = FeatureUtils.detectDescribe(img, FeatureUtils.TYPE_OPENSURF, 5,
                                                             4, 2, 0.0004f);
+
 
     try {
       List<Match> matches = FeatureUtils.getMatches(keypoints1, keypoints1,
@@ -114,9 +117,31 @@ public class FeatureUtilsTest {
     img.release();
   }
 
-  private Image getTestImage() {
+  private Image getTestImage1() {
     try {
-      BufferedImage img = ImageIO.read(getClass().getResource("/test.jpg"));
+      BufferedImage img = ImageIO.read(getClass().getResource("/test1.jpg"));
+      return new Image(img);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  private Image getTestImage2() {
+    try {
+      BufferedImage img = ImageIO.read(getClass().getResource("/test2.jpg"));
+      return new Image(img);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
+  private Image getTestImage3() {
+    try {
+      BufferedImage img = ImageIO.read(getClass().getResource("/test3.jpg"));
       return new Image(img);
     } catch (IOException e) {
       e.printStackTrace();
